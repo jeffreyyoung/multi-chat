@@ -2,6 +2,9 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var people = {};
+var rooms = {};
+
 app.get('/', function(req, res) {
 	console.log(__dirname);
 	res.sendFile(__dirname + '/index.html');
@@ -9,6 +12,12 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
+
+	socket.on('set user-name', function(name) {
+		people[socket.id] = name;
+		io.emit('chat message', name + " has joined the server")
+	})
+
 	socket.on('disconnect', function() {
 		console.log('user disconnected');
 	});
