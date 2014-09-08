@@ -1,35 +1,25 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+
 var io = require('socket.io')(http);
+var initSocket = require('./socket/main')(app, io)
 
-app.people = {};
-app.rooms = {};
+var hbs = require('hbs');
 
-var people = app.people;
-var rooms = app.rooms;
+app.set('view engine', 'html')
+app.engine('html', hbs.__express);
+
+app.use('/public', express.static('public'));
 
 app.get('/', function(req, res) {
 	console.log(__dirname);
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/views/index.html');
 });
 
-io.on('connection', function(socket) {
-	console.log('a user connected');
-
-	socket.on('set user-name', function(name) {
-		people[socket.id] = name;
-		io.emit('chat message', name + " has joined the server")
-	})
-
-	socket.on('disconnect', function() {
-		console.log('user disconnected');
-	});
-	socket.on('chat message', function(msg){
-		console.log('message: ' + msg);
-		io.emit('chat message', people[socket.id], msg);
-	})
-});
+app.get('/test', function(req, res){
+	res.render('test', {thing: 'abcdefg'})
+})
 
 http.listen(3000, function(){
 	console.log('listening on *:3000');

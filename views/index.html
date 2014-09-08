@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+
+  </head>
+  <body>
+
+    {{#each people}}
+      <h3>{{this}}</h3>
+    {{/each}}
+
+    <div id="main"></div>
+    
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="public/js/main.js"></script>
+  </body>
+</html>
