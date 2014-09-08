@@ -1,9 +1,13 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var people = {};
-var rooms = {};
+app.people = {};
+app.rooms = {};
+
+var people = app.people;
+var rooms = app.rooms;
 
 app.get('/', function(req, res) {
 	console.log(__dirname);
