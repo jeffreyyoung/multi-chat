@@ -10,6 +10,8 @@ var hbs = require('hbs');
 app.set('view engine', 'html')
 app.engine('html', hbs.__express);
 
+hbs.registerPartials(__dirname + '/views/partials');
+
 hbs.registerHelper( 'eachInMap', function ( map, block ) {
    var out = '';
    Object.keys( map ).map(function( prop ) {

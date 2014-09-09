@@ -1,23 +1,40 @@
 
 var $main = $('#main');
 
-function hideAndRemoveContent(){
-	$main.html('');
+function attachListenerToMessenger(){
+	$(".messenger button").on('click',function(){
+		var message = $('.messenger input').val();
+		$('.messenger input').val('');
+		socket.emit('message', message);
+	})
 }
-function injectHtmlToMain(html){
-	$main.html(html);
+
+function attachRoomListeners(){
+	$("#rooms a").on('click', function(){
+		socket.emit('enter room', $(this).text())
+	})
+
+	$('#back-to-lobby').on('click', function(){
+		socket.emit('enter lobby');
+	})
+}
+
+function transition(url){
+	$.get(url, function(data){
+		$main.fadeOut(300, function(){
+			$main.html(data);
+			$main.fadeIn(300);
+
+			attachListenerToMessenger();
+			attachRoomListeners();
+		})
+	})
 }
 
 socket.on('enter lobby', function(){
-	hideAndRemoveContent();
-	$.get('/lobby', function(data){
-		injectHtmlToMain(data);
-	})
+	transition('/lobby')
 });
 
-socket.on('enter room', function(){
-	hideAndRemoveContent();
-	$.get('/room', function(data){
-		injectHtmlToMain(data);
-	})
+socket.on('enter room', function(roomId){
+	transition('/room/' + roomId)
 })

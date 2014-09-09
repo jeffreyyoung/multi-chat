@@ -1,29 +1,21 @@
 
-
-
-
 	<section class = "row">
 
 		<section class= "col-sm-8">
-			<h1>Lobby</h1>
+			<h1>{{name}}</h1>
 			{{> messenger}}
 		</section>
 
 		<section class= "col-sm-4">
+
+			<h2><a id="back-to-lobby">Back to lobby</a></h2>
+
 			<h3>People</h3>
 			{{#eachInMap people}}
 				<p>{{key}} : {{value.name}}</p>
 			{{/eachInMap}}
 
-			<hr>
 
-			<h3>Rooms</h3>
-			<ul class="list-unstyled" id = "rooms">
-			{{#eachInMap rooms}}
-				<li><a>{{value.name}}</a><li>
-			{{/eachInMap}}
-			</ul>
 		</section>
 
 	</section>
-
