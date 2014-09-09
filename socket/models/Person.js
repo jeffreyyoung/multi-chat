@@ -11,7 +11,10 @@ Person.prototype.joinRoom = function(room){
 	//this.currentRoom.leave(socket.id)
 	//this.currentRoom = 
 	this.socket.leave(this.currentRoom);
+	this.rooms[this.currentRoom].removePerson(this.socket.id);
+	this.rooms[room].addPerson(this.socket.id);
 	this.socket.join(room);
+
 	this.currentRoom = room;
 }
 

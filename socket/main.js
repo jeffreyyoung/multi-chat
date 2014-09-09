@@ -6,9 +6,9 @@ module.exports = function init(app, io){
 
 	var people = {};
 	var rooms = {};
-	rooms['lobby'] = new Room('lobby');
-	rooms['room1'] = new Room('room1');
-	rooms['room2'] = new Room('room2');
+	rooms['lobby'] = new Room('lobby', people);
+	rooms['room1'] = new Room('room1', people);
+	rooms['room2'] = new Room('room2', people);
 
 
 	io.on('connection', function(socket) {

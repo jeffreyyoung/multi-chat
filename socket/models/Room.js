@@ -1,7 +1,8 @@
-function Room(name){
+function Room(name, allPeople){
 	this.name = name;
 	this.id = hash(name);
 	this.people = {};
+    this.allPeople = allPeople;
 
 }
 
@@ -16,12 +17,14 @@ function hash(str){//http://erlycoder.com/49/javascript-hash-functions-to-conver
     return hash;
 }
 
-Room.prototype.addPerson = function(person){
-	this.people[person.id] = person;
+Room.prototype.addPerson = function(personID){
+    var newPerson = this.allPeople[personID]
+	this.people[personID] = newPerson;
+    console.log(this.people)
 }
 
-Room.prototype.removePerson = function(person){
-	delete this.people[person.id];
+Room.prototype.removePerson = function(personID){
+	delete this.people[personID];
 }
 
 module.exports = Room;
