@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  </head>
+  <body>
+
+    <div id="main" class="container">
+      <div class ="row">
+      <section class= "col-sm-4 col-sm-offset-4">
+        <form role="form" id="login">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input class="form-control" id="username" placeholder="Enter a username">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </section>   
+      </div>   
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="public/js/main.js"></script>
+    <script src="public/js/transitions.js"></script>
+  </body>
+</html>

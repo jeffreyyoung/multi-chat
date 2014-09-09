@@ -1,31 +1,24 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
+
 var io = require('socket.io')(http);
+var initSocket = require('./socket/main')(app, io)
 
-var people = {};
-var rooms = {};
+var hbs = require('hbs');
 
-app.get('/', function(req, res) {
-	console.log(__dirname);
-	res.sendFile(__dirname + '/index.html');
-});
+app.set('view engine', 'html')
+app.engine('html', hbs.__express);
 
-io.on('connection', function(socket) {
-	console.log('a user connected');
+hbs.registerHelper( 'eachInMap', function ( map, block ) {
+   var out = '';
+   Object.keys( map ).map(function( prop ) {
+      out += block.fn( {key: prop, value: map[ prop ]} );
+   });
+   return out;
+} );
 
-	socket.on('set user-name', function(name) {
-		people[socket.id] = name;
-		io.emit('chat message', name + " has joined the server")
-	})
-
-	socket.on('disconnect', function() {
-		console.log('user disconnected');
-	});
-	socket.on('chat message', function(msg){
-		console.log('message: ' + msg);
-		io.emit('chat message', people[socket.id], msg);
-	})
-});
+app.use('/public', express.static('public'));
 
 http.listen(3000, function(){
 	console.log('listening on *:3000');
