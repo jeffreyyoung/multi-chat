@@ -6,3 +6,4 @@ $('form#login').submit(function(){
 	console.log('setting username');
 	return false;
 });
+

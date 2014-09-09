@@ -18,6 +18,7 @@ hbs.registerHelper( 'eachInMap', function ( map, block ) {
    return out;
 } );
 
+
 app.use('/public', express.static('public'));
 
 http.listen(3000, function(){

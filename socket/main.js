@@ -35,5 +35,4 @@ module.exports = function init(app, io){
 			rooms: rooms
 		})
 	});
-
 }
