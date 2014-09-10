@@ -1,27 +1,52 @@
-	<section class = "row">
+<section class = "row">
 
-		<section class= "col-sm-8">
-			<h1>Lobby</h1>
-			{{> messenger}}
-		</section>
-
-		<section class= "col-sm-4">
-			<h3>People</h3>
-			<ul class="list-unstyled" id = "people">
-			{{#eachInMap people}}
-				<li id="{{key}}">{{value.name}}</li>
-			{{/eachInMap}}
-			</ul>
-
-			<hr>
-
-			<h3>Rooms</h3>
-			<ul class="list-unstyled" id = "rooms">
-			{{#eachInMap rooms}}
-				<li id="{{key}}"><a>{{value.name}}</a></li>
-			{{/eachInMap}}
-			</ul>
-		</section>
-
+	<section class= "col-sm-8">
+		<h1>Lobby</h1>
+		{{> messenger}}
 	</section>
 
+	<section class= "col-sm-4">
+		<h3>People</h3>
+		<ul class="list-unstyled" id = "people">
+		{{#eachInMap people}}
+			<li id="{{key}}">{{value.name}}</li>
+		{{/eachInMap}}
+		</ul>
+
+		<hr>
+
+		<h3>Rooms</h3>
+		<ul class="list-unstyled" id = "rooms">
+		{{#eachInMap rooms}}
+			<li id="{{key}}"><a>{{value.name}}</a></li>
+		{{/eachInMap}}
+		</ul>
+		<!-- Button trigger modal -->
+		<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+			<b>+</b> Create Room
+		</button>
+	</section>
+
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="myModalLabel">Create Room</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="room-name">Room Name</label>
+					<input class="form-control" id="room-name" placeholder="Enter a room name">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" id="create-room" >Create Room</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -42,7 +42,7 @@ module.exports = function init(app, io){
 
 			//enter room
 			person.joinRoom(id);
-			sockit.emit('enter room', id);
+			socket.emit('enter room', id);
 
 			//notify current room that you have entered
 			socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name);
@@ -53,9 +53,36 @@ module.exports = function init(app, io){
 			io.sockets.in(people[socket.id].currentRoom).emit('message', people[socket.id].name, message);
 			var person = people[socket.id];
 		})
+
+		socket.on('create room', function(name){
+			var person = people[socket.id]
+			console.log(person.name + " wants to create a room named: " + name)
+			//do name validation here
+			var room = new Room(name, people);
+			if(!rooms[room.id]) {
+				socket.to('lobby').emit('room created', room.id, room.name);
+				
+				rooms[room.id] = room;
+				switchRooms(person.socket, room.id);
+
+			}	
+
+		})
 	});
 
+	function switchRooms(socket, id){
+		var person = people[socket.id];
 
+		//notify current room that you are leaving
+		socket.broadcast.to(person.currentRoom).emit('person left room', person.socket.id, person.name);
+
+		//enter room
+		person.joinRoom(id);
+		socket.emit('enter room', id);
+
+		//notify current room that you have entered
+		socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name);
+	}
 
 	app.get('/', function(req, res) {
 		res.render('index',{people: people});

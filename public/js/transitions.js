@@ -10,8 +10,14 @@ function attachListenerToMessenger(){
 }
 
 function attachRoomListeners(){
-	$("#rooms a").on('click', function(){
-		socket.emit('enter room', $(this).text())
+
+	$('#create-room').on('click', function(){
+		socket.emit('create room', $("#room-name").val());
+		$("#myModal").modal('hide');
+	})
+
+	$("#rooms li").on('click', function(){
+		socket.emit('enter room', $(this).attr('id'))	
 	})
 
 	$('#back-to-lobby').on('click', function(){

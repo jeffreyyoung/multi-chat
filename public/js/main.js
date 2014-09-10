@@ -6,6 +6,15 @@ $('form#login').submit(function(){
 	return false;
 });
 
+
+socket.on('room created', function(id, name){
+	$('<li>').text('<a>' + name + '</a')
+		.attr('id', id)
+		.on('click', function(){
+			socket.emit('enter room', id)
+		})
+})
+
 socket.on('enter room', function(roomId){
 	transition('/room/' + roomId)
 })
@@ -25,6 +34,7 @@ socket.on('person left room', function(id, name){
 	$('#people #'+id).remove();
 	$('#messages').append($('<li>').text(name + "left the room"));
 })
+
 
 
 
