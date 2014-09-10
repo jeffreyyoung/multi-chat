@@ -26,4 +26,8 @@ Room.prototype.removePerson = function(personID){
 	delete this.people[personID];
 }
 
+Room.prototype.getPeopleCount = function() {
+    return  Object.keys(this.people).length
+}
+
 module.exports = Room;

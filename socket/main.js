@@ -7,11 +7,6 @@ module.exports = function init(app, io){
 	var people = {};
 	var rooms = {};
 	rooms['lobby'] = new Room('lobby', people);
-	var room1 = new Room('room1', people);
-	var room2 = new Room('room2', people);
-	rooms[room1.id] = room1;
-	rooms[room2.id] = room2;
-
 
 	io.on('connection', function(socket) {
 
@@ -31,7 +26,7 @@ module.exports = function init(app, io){
 			people[socket.id] = person;
 			rooms['lobby'].addPerson(socket.id);
 			socket.emit('enter room', 'lobby');
-			socket.broadcast.to('lobby').emit('user entered', name);
+			socket.to('lobby').emit('user entered', name);
 		})
 
 		socket.on('enter room', function(id){
@@ -46,6 +41,9 @@ module.exports = function init(app, io){
 
 			//notify current room that you have entered
 			socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name);
+		
+			//check if past room is empty after
+
 		})
 
 		socket.on('message', function(message){
@@ -61,7 +59,7 @@ module.exports = function init(app, io){
 			var room = new Room(name, people);
 			if(!rooms[room.id]) {
 				socket.to('lobby').emit('room created', room.id, room.name);
-				
+
 				rooms[room.id] = room;
 				switchRooms(person.socket, room.id);
 

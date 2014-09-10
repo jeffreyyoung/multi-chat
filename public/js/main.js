@@ -6,13 +6,18 @@ $('form#login').submit(function(){
 	return false;
 });
 
-
 socket.on('room created', function(id, name){
 	$('<li>').text('<a>' + name + '</a')
 		.attr('id', id)
 		.on('click', function(){
 			socket.emit('enter room', id)
 		})
+})
+
+socket.on('room destroyed', function(id){
+	$('#' + id).fadeOut(300, function(){
+		$(this).remove();
+	})
 })
 
 socket.on('enter room', function(roomId){
@@ -25,14 +30,14 @@ socket.on('message', function(name, message){
 
 socket.on('person entered room', function(id, name){
 	console.log(name + "entered room")
-	$('#people').append($('<li>').text(name).attr('id', id))
-	$('#messages').append($('<li>').text(name + " entered the room"));
+	$('#people').append($('<li>').text(name).attr('id', id).hide().fadeIn())
+	$('#messages').append($('<li>').text(name + " entered the room").hide().fadeIn());
 })
 
 socket.on('person left room', function(id, name){
 	console.log(name + " left")
-	$('#people #'+id).remove();
-	$('#messages').append($('<li>').text(name + "left the room"));
+	$('#people #'+id).fadeOut(300, function(){$(this).remove()});
+	$('#messages').append($('<li>').text(name + " left the room").hide().fadeIn());
 })
 
 
