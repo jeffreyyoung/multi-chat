@@ -15,7 +15,7 @@ function attachRoomListeners(){
 	})
 
 	$('#back-to-lobby').on('click', function(){
-		socket.emit('enter lobby');
+		socket.emit('enter room', 'lobby');
 	})
 }
 
@@ -30,10 +30,6 @@ function transition(url){
 		})
 	})
 }
-
-socket.on('enter lobby', function(){
-	transition('/lobby')
-});
 
 socket.on('enter room', function(roomId){
 	transition('/room/' + roomId)
