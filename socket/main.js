@@ -7,8 +7,10 @@ module.exports = function init(app, io){
 	var people = {};
 	var rooms = {};
 	rooms['lobby'] = new Room('lobby', people);
-	rooms['room1'] = new Room('room1', people);
-	rooms['room2'] = new Room('room2', people);
+	var room1 = new Room('room1', people);
+	var room2 = new Room('room2', people);
+	rooms[room1.id] = room1;
+	rooms[room2.id] = room2;
 
 
 	io.on('connection', function(socket) {
@@ -16,44 +18,40 @@ module.exports = function init(app, io){
 		console.log('a user connected');
 
 		socket.on('disconnect', function() {
-			delete people[socket.id];
-			//leave room
+			if(people[socket.id]){
+				rooms[people[socket.id].currentRoom].removePerson(socket.id);
+				delete people[socket.id];
+			}
 			console.log('user disconnected');
 		});
 
 		socket.on('set username', function(name){
 			console.log('setting username: ' + name)
-			people[socket.id] = new Person(socket, name, rooms);
-			socket.emit('enter lobby');
+			var person = new Person(socket, name, rooms);
+			people[socket.id] = person;
+			rooms['lobby'].addPerson(socket.id);
+			socket.emit('enter room', 'lobby');
 			socket.broadcast.to('lobby').emit('user entered', name);
 		})
 
-		socket.on('enter lobby', function() {
+		socket.on('enter room', function(id){
 			var person = people[socket.id];
-			console.log(person.currentRoom + ": entering lobby")
-			socket.broadcast.to(person.currentRoom).emit('person left room', person.socket.id, person.name)
-			person.joinRoom('lobby');
-			socket.emit('enter lobby');
-			socket.broadcast.to(people[socket.id].currentRoom).emit('person entered room', person.socket.id, person.name)
+
+			//notify current room that you are leaving
+			socket.broadcast.to(person.currentRoom).emit('person left room', person.socket.id, person.name);
+
+			//enter room
+			person.joinRoom(id);
+			sockit.emit('enter room', id);
+
+			//notify current room that you have entered
+			socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name);
 		})
 
 		socket.on('message', function(message){
 			//console.log(people[socket.id].name +": " + message + " => to " + people[socket.id].currentRoom)
 			io.sockets.in(people[socket.id].currentRoom).emit('message', people[socket.id].name, message);
-		})
-
-		socket.on('enter room', function(room){
-			console.log(people[socket.id].name + " wants to enter " + room)
 			var person = people[socket.id];
-			console.log(person.currentRoom)
-			person.joinRoom(room);
-			console.log(person.currentRoom)
-			socket.emit('enter room', room);
-			socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name)
-
-			// socket.emit('console', {
-			// 	thing: person
-			// })//
 		})
 	});
 
@@ -63,14 +61,22 @@ module.exports = function init(app, io){
 		res.render('index',{people: people});
 	});
 
-	app.get('/lobby', function(req, res){
+	app.get('room/lobby', function(req, res){
 		res.render('lobby', {
-			people: people,
+			people: rooms['lobby'].people,
 			rooms: rooms
 		})
 	});
 
-	app.get('/room/:name', function(req, res){
-		res.render('room', rooms[req.params.name])
+	app.get('/room/:id', function(req, res){
+		if (req.params.id == 'lobby') {
+			res.render('lobby', {
+				people: rooms['lobby'].people,
+				rooms: rooms
+			})
+		} 
+		else {
+			res.render('room', rooms[req.params.id])
+		}
 	})
 }

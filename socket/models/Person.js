@@ -3,8 +3,9 @@ function Person(socket, username, rooms){
 	this.currentRoom = 'lobby';
 	this.name = username;
 	this.rooms = rooms;
-	this.currentRoom = 'lobby';
-	socket.join('lobby');
+
+	this.socket.join(this.currentRoom)
+	this.rooms[this.currentRoom].addPerson(this.socket.id);
 }
 
 Person.prototype.joinRoom = function(room){
@@ -12,8 +13,8 @@ Person.prototype.joinRoom = function(room){
 	//this.currentRoom = 
 	this.socket.leave(this.currentRoom);
 	this.rooms[this.currentRoom].removePerson(this.socket.id);
-	this.rooms[room].addPerson(this.socket.id);
 	this.socket.join(room);
+	this.rooms[room].addPerson(this.socket.id);
 
 	this.currentRoom = room;
 }

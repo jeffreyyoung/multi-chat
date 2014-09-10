@@ -6,6 +6,10 @@ $('form#login').submit(function(){
 	return false;
 });
 
+socket.on('enter room', function(roomId){
+	transition('/room/' + roomId)
+})
+
 socket.on('message', function(name, message){
 	$('#messages').append($('<li>').text(name + ": " + message));
 })
