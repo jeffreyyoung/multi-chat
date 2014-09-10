@@ -11,9 +11,11 @@
 			<h2><a id="back-to-lobby">Back to lobby</a></h2>
 
 			<h3>People</h3>
+			<ul class="list-unstyled" id = "people">
 			{{#eachInMap people}}
-				<p>{{key}} : {{value.name}}</p>
+				<li id="{{key}}">{{value.name}}</li>
 			{{/eachInMap}}
+			</ul>
 
 
 		</section>

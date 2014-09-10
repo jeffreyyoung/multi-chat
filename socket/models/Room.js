@@ -20,7 +20,6 @@ function hash(str){//http://erlycoder.com/49/javascript-hash-functions-to-conver
 Room.prototype.addPerson = function(personID){
     var newPerson = this.allPeople[personID]
 	this.people[personID] = newPerson;
-    console.log(this.people)
 }
 
 Room.prototype.removePerson = function(personID){
