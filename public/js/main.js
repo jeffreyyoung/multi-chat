@@ -7,11 +7,15 @@ $('form#login').submit(function(){
 });
 
 socket.on('room created', function(id, name){
-	$('<li>').text('<a>' + name + '</a')
+	console.log('room created')
+	var li = $('<li>').text('<a>' + name + '</a>')
 		.attr('id', id)
 		.on('click', function(){
 			socket.emit('enter room', id)
 		})
+
+	$("#rooms").append(li);
+
 })
 
 socket.on('room destroyed', function(id){

@@ -26,7 +26,7 @@ module.exports = function init(app, io){
 			people[socket.id] = person;
 			rooms['lobby'].addPerson(socket.id);
 			socket.emit('enter room', 'lobby');
-			socket.to('lobby').emit('user entered', name);
+			socket.to('lobby').emit('person entered room', person.socket.id, person.name);
 		})
 
 		socket.on('enter room', function(id){
@@ -58,7 +58,7 @@ module.exports = function init(app, io){
 			//do name validation here
 			var room = new Room(name, people);
 			if(!rooms[room.id]) {
-				socket.to('lobby').emit('room created', room.id, room.name);
+				socket.broadcast.to('lobby').emit('room created', room.id, room.name);
 
 				rooms[room.id] = room;
 				switchRooms(person.socket, room.id);
