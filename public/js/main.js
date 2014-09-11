@@ -1,11 +1,5 @@
 var socket = io();
 
-$('form#login').submit(function(){
-	socket.emit('set username', $('#username').val());
-	$('#user-name').val('');
-	return false;
-});
-
 socket.on('room created', function(id, name){
 	console.log('room created')
 	var li = $('<li>').text('<a>' + name + '</a>')

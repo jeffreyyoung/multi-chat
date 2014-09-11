@@ -21,7 +21,6 @@ module.exports = function init(app, io){
 		});
 
 		socket.on('set username', function(name){
-			console.log('setting username: ' + name)
 			var person = new Person(socket, name, rooms);
 			people[socket.id] = person;
 			rooms['lobby'].addPerson(socket.id);
@@ -29,21 +28,8 @@ module.exports = function init(app, io){
 			socket.to('lobby').emit('person entered room', person.socket.id, person.name);
 		})
 
-		socket.on('enter room', function(id){
-			var person = people[socket.id];
-
-			//notify current room that you are leaving
-			socket.broadcast.to(person.currentRoom).emit('person left room', person.socket.id, person.name);
-
-			//enter room
-			person.joinRoom(id);
-			socket.emit('enter room', id);
-
-			//notify current room that you have entered
-			socket.broadcast.to(person.currentRoom).emit('person entered room', person.socket.id, person.name);
-		
-			//check if past room is empty after
-
+		socket.on('enter room', function(roomID){
+			switchRooms(socket, roomID);
 		})
 
 		socket.on('message', function(message){
@@ -54,12 +40,9 @@ module.exports = function init(app, io){
 
 		socket.on('create room', function(name){
 			var person = people[socket.id]
-			console.log(person.name + " wants to create a room named: " + name)
-			//do name validation here
 			var room = new Room(name, people);
 			if(!rooms[room.id]) {
 				socket.broadcast.to('lobby').emit('room created', room.id, room.name);
-
 				rooms[room.id] = room;
 				switchRooms(person.socket, room.id);
 

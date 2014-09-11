@@ -12,11 +12,7 @@ Person.prototype.joinRoom = function(room){
 	this.socket.leave(this.currentRoom);
 	this.rooms[this.currentRoom].removePerson(this.socket.id);
 
-	console.log(this.rooms);
-
 	var room1 = this.rooms[this.currentRoom]
-
-	console.log(room1.name + " has " + Object.keys(room1.people).length + " people")
 
 	this.socket.join(room);
 	this.rooms[room].addPerson(this.socket.id);
