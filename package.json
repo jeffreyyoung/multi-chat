@@ -1,10 +1,10 @@
 {
-  "name": "ChatRooms",
+  "name": "multi-chat",
   "version": "1.0.0",
   "description": "multi room chat",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "Jeffrey Young",
   "license": "ISC",
@@ -12,5 +12,6 @@
     "express": "^4.8.7",
     "socket.io": "^1.1.0",
     "hbs": "^2.7.0"
-  }
+  },
+  "engine": "node 0.10.26"
 }
