@@ -1,19 +1,37 @@
 
 var $main = $('#main');
 
+$('form#login').submit(function(){
+	var name = $('#username').val();
+	if (/\S/.test(name)){
+		socket.emit('set username', name.trim());
+	}
+	$('#user-name').val('');
+	return false;
+});
+
 function attachListenerToMessenger(){
-	$(".messenger button").on('click',function(){
-		var message = $('.messenger input').val();
-		$('.messenger input').val('');
-		socket.emit('message', message);
+	$('form#messenger').submit(function(){
+		var message = $('#messenger input').val();
+		$('#messenger input').val('');
+
+		if (/\S/.test(message)) //check if string is not just whitespace
+			socket.emit('message', message);
+
+		return false;
 	})
 }
 
 function attachRoomListeners(){
 
 	$('#create-room').on('click', function(){
-		socket.emit('create room', $("#room-name").val());
-		$("#myModal").modal('hide');
+
+		var name = $("#room-name").val();
+
+		if (/\S/.test(name)){
+			socket.emit('create room', name.trim());
+			$("#myModal").modal('hide');
+		}
 	})
 
 	$("#rooms li").on('click', function(){
