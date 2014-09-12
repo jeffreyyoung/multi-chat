@@ -13,5 +13,11 @@
     "socket.io": "^1.1.0",
     "hbs": "^2.7.0"
   },
-  "engine": "node 0.10.26"
+  "engines": {
+    "node": "0.10.26"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffreyyoung/multi-chat"
+  }
 }
