@@ -3,4 +3,14 @@
 <a href="http://multi-chat.herokuapp.com/">demo</a>
 
 <h3>How to use?</h3>
-<p>Clone the project, navigate to the root project directory in terminal, enter the command 'npm install' followed by 'node index' and then navigate to localhost:3000 in your browser.</p>
+
+---
+git clone https://github.com/jeffreyyoung/multi-chat.git
+
+cd multi-chat
+
+npm install
+
+node index
+---
+<p>navigate to localhost:3000 in your browser.</p>
