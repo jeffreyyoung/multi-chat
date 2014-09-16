@@ -15,6 +15,7 @@ module.exports = function init(app, io){
 		socket.on('disconnect', function() {
 			if(people[socket.id]){
 				var person = people[socket.id];
+				console.log(person.name + " is leaving");
 				socket.broadcast.to(person.currentRoom).emit('person left room', person.socket.id, person.name);
 				rooms[people[socket.id].currentRoom].removePerson(socket.id);
 				delete people[socket.id];
