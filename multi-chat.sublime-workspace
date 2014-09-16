@@ -1,0 +1,212 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"get",
+				"get_user_message"
+			],
+			[
+				"curr",
+				"currentRoom"
+			],
+			[
+				"cu",
+				"currentRoom"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/jeffreyyoung/Source/multi-chat"
+	],
+	"file_history":
+	[
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/logger.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/scratch.cpp",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/echo-client.cc",
+		"/Users/jeffreyyoung/Source/messaging-service-python-master/messageClient.py",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/lab",
+		"/Users/jeffreyyoung/Source/messaging-service-python-master/messageDaemon.py",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client-main.cpp",
+		"/Users/jeffreyyoung/Source/cs360-lab1/Client.cpp",
+		"/Users/jeffreyyoung/Source/cs360-lab1/Client.h",
+		"/Users/jeffreyyoung/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/jeffreyyoung/Source/socket-programming-examples-c/echo/client.cc",
+		"/Users/jeffreyyoung/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/jeffreyyoung/Source/multi-chat/README.md",
+		"/Users/jeffreyyoung/Source/multi-chat/index.js",
+		"/Users/jeffreyyoung/Source/multi-chat/.gitignore",
+		"/Users/jeffreyyoung/Source/multi-chat/package.json",
+		"/Users/jeffreyyoung/Source/multi-chat/Procfile",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/models/Room.js",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/models/Person.js",
+		"/Users/jeffreyyoung/Source/multi-chat/public/js/main.js",
+		"/Users/jeffreyyoung/Source/multi-chat/public/js/transitions.js",
+		"/Users/jeffreyyoung/Source/multi-chat/views/lobby.html",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/main.js",
+		"/Users/jeffreyyoung/Source/multi-chat/views/room.html",
+		"/Users/jeffreyyoung/Desktop/cs252/jh.html",
+		"/Users/jeffreyyoung/Desktop/cs252/wr.html",
+		"/Users/jeffreyyoung/Desktop/cs252/wg.html",
+		"/Users/jeffreyyoung/Desktop/cs252/index.html",
+		"/Users/jeffreyyoung/Source/multi-chat/views/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/lobby.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/index.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/public/scripts/login.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/models/Person.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/models/Room.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/public/scripts/transitions.js",
+		"/Users/jeffreyyoung/Source/multi-chat/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/package.json"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"console"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "multi-chat.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

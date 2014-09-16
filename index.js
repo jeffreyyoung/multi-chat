@@ -25,8 +25,8 @@ hbs.registerHelper( 'eachInMap', function ( map, block ) {
 
 app.use('/public', express.static('public'));
 
-http.listen(process.env.PORT || 3000, function(){
-	var port = process.env.PORT || 3000;
+http.listen(process.env.PORT || 1930, function(){
+	var port = process.env.PORT || 1930;
 	console.log('listening on *:' + port);
 });
 
