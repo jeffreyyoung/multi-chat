@@ -19,6 +19,22 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "index.js",
+			"settings":
+			{
+				"buffer_size": 723,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "socket/main.js",
+			"settings":
+			{
+				"buffer_size": 2502,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -47,10 +63,12 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/jeffreyyoung/Source/multi-chat"
+		"/Users/jeffreyyoung/Source/multi-chat",
+		"/Users/jeffreyyoung/Source/multi-chat/socket"
 	],
 	"file_history":
 	[
+		"/Users/jeffreyyoung/Source/multi-chat/views/index.html",
 		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.h",
 		"/Users/jeffreyyoung/Source/cs360-lab1/client/logger.h",
 		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.cc",
@@ -81,7 +99,6 @@
 		"/Users/jeffreyyoung/Desktop/cs252/wr.html",
 		"/Users/jeffreyyoung/Desktop/cs252/wg.html",
 		"/Users/jeffreyyoung/Desktop/cs252/index.html",
-		"/Users/jeffreyyoung/Source/multi-chat/views/index.html",
 		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/lobby.html",
 		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/index.html",
 		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/index.js",
@@ -126,8 +143,66 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 723,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								723,
+								723
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "socket/main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2502,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								877,
+								877
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 3.0,
+						"translation.y": 116.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -204,7 +279,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 150.0,
+	"side_bar_width": 135.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

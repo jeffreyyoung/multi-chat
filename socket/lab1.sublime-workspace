@@ -1,0 +1,454 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"l",
+				"log"
+			],
+			[
+				"clinet_",
+				"clients_queue"
+			],
+			[
+				"mailb",
+				"mailbox_sem"
+			],
+			[
+				"num_thre",
+				"num_threads"
+			],
+			[
+				"o",
+				"o"
+			],
+			[
+				"get_re",
+				"get_request_message"
+			],
+			[
+				"su",
+				"subject"
+			],
+			[
+				"split",
+				"split_by_line"
+			],
+			[
+				"i",
+				"isActivated"
+			],
+			[
+				"is",
+				"isActivated_"
+			],
+			[
+				"isA",
+				"isActivated"
+			],
+			[
+				"handle",
+				"handle_response"
+			],
+			[
+				"spli",
+				"split_by_line"
+			],
+			[
+				"sp",
+				"split_by_line"
+			],
+			[
+				"get",
+				"get_user_message"
+			],
+			[
+				"curr",
+				"currentRoom"
+			],
+			[
+				"cu",
+				"currentRoom"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "#include \"server.h\"\n\nServer::Server() {\n    // setup variables\n    //buflen_ = 1024;\n    //buf_ = new char[buflen_+1];\n    num_threads = 10;\n}\n\nServer::~Server() {\n    delete mailbox_sem;\n    delete queue_sem;\n    delete n;\n    delete e;\n}\n\nvoid\nServer::run(bool debug) {\n    // create and run the server\n    logger_.set_is_activated(debug);\n    create();\n    serve();\n}\n\nvoid\nServer::create() {\n}\n\nvoid\nServer::close_socket() {\n}\n\nvoid\nServer::serve() {\n    // setup client\n    int client;\n    struct sockaddr_in client_addr;\n    socklen_t clientlen = sizeof(client_addr);\n\n    sem_unlink(\"mailbox\");\n    sem_unlink(\"queue\");\n    sem_unlink(\"n\");\n    sem_unlink(\"e\");\n\n    mailbox_sem = sem_open(\"mailbox\", O_CREAT, 0644, 1); \n    queue_sem  = sem_open(\"queue\", O_CREAT, 0644, 1);\n    n = sem_open(\"n\", O_CREAT, 0644, 0);\n    e = sem_open(\"e\", O_CREAT, 0644, num_threads);\n\n\n    pthread_t threads[num_threads];\n\n    for (int i = 0; i < num_threads; i++){\n        pthread_create(&threads[i], NULL, Server::callMemberFunction, this);\n    }\n\n      // accept clients\n    sem_wait(mailbox_sem);\n    logger_.log(\"Accepting clients\");\n    sem_post(mailbox_sem);\n    while (1) {\n\n        if((client = accept(server_,(struct sockaddr *)&client_addr,&clientlen)) > 0){\n            int semVal;\n            sem_getvalue(e, &semVal);\n\n            cout << \"accepted a client!!!   \" << semVal << endl;\n\n            sem_wait(e);\n            cout << \"waiting 1\" << endl;\n            sem_wait(queue_sem);\n            clients_queue.push(client);\n            sem_post(queue_sem);\n            sem_post(n);\n        }\n\n    }\n\n    sem_close(mailbox_sem);\n    sem_close(queue_sem);\n    sem_close(n);\n    sem_close(e);\n\n    sem_unlink(\"mailbox\");\n    sem_unlink(\"queue\");\n    sem_unlink(\"n\");\n    sem_unlink(\"e\");\n\n    close_socket();\n}\n\nvoid* \nServer::runThread(){\n    sem_wait(mailbox_sem);\n    logger_.log(\"running thread\");\n    sem_post(mailbox_sem);\n    while(true){\n        int semVal;\n        sem_getvalue(n, &semVal);\n        cout << \"*\" << endl;\n        sem_wait(n);\n        cout << \"$\" << endl;\n        sem_wait(queue_sem);\n        int client = clients_queue.front();\n        clients_queue.pop();\n        sem_post(queue_sem);\n        sem_post(e);\n\n        handle(client);\n    }\n\n    return (void*)\"\";\n}\n\nvector<string>\nServer::split(string str){\n    string buf; // Have a buffer string\n    stringstream ss(str); // Insert the string into a stream\n\n    vector<string> tokens; // Create vector to hold our words\n\n    while (ss >> buf)\n        tokens.push_back(buf);\n\n    return tokens;\n}\n\nvoid \nServer:: addToMap(string name, string subject, string message, int size){\n    logger_.log(\"adding to map for \" + name);\n    map<string, DATA>::iterator it = map_.find(name);\n    logger_.log(\"adding: \" + message);\n    sem_wait(mailbox_sem);\n    if (it != map_.end()){\n        //add to existing\n        map_[name].subjects.push_back(subject);\n        map_[name].messages.push_back(message);\n        map_[name].sizes.push_back(size);\n    }\n    else {\n        DATA data;\n        data.subjects.push_back(subject);\n        data.messages.push_back(message);\n        data.sizes.push_back(size);\n        map_.insert(mapPair(name, data));\n        //create new\n    }\n    sem_post(mailbox_sem);\n}\n\nstring\nServer::parse_request(string request, int client, string &cache_){\n    logger_.log(\"parsing request: \" + request);\n    vector<string> fields = split(request);\n\n    for (int i = 0; i < fields.size(); i++){\n        logger_.log(to_string(i) + \" \" + fields.at(i));\n    }\n\n    if (fields.size() == 0){\n        return \"error invalid message\\n\";\n    }\n    else if (fields.at(0) == \"reset\"){\n        sem_wait(mailbox_sem);\n        map_.clear();\n        sem_post(mailbox_sem);\n        //reset message\n        return \"OK\\n\";\n    }\n    else if (fields.at(0) == \"put\" && fields.size() >= 4) {\n        string name = fields.at(1);\n        string subject = fields.at(2);\n        int length = atoi(fields.at(3).c_str());\n        logger_.log(\"about to get data...\");\n        string data = get_request_message(client, length, cache_);\n        //CHASDFJKALSDF JALKSDF ATHIS!!!!!\n        //string data = get_request(client, cache_);\n        addToMap(name, subject, data, length);\n        return \"OK\\n\";\n    }\n    else if (fields.at(0) == \"list\" && fields.size() ==2){\n        string name = fields.at(1);\n        sem_wait(mailbox_sem);\n\n        map<string, DATA>::iterator it = map_.find(name);\n\n        if (it != map_.end()){\n            logger_.log(\"listing data\");\n\n            string str = \"list \" + to_string(map_[name].subjects.size()) + \"\\n\";\n            cout << str << endl;\n            for (int i = 0; i < map_[name].subjects.size(); i++){\n                str += to_string(i + 1) + \" \" + map_[name].subjects.at(i) + \"\\n\";\n            }\n            sem_post(mailbox_sem);\n            return str;\n        }\n        else {\n            sem_post(mailbox_sem);\n            return \"error user not found\\n\";\n        }\n\n        return \"list\\n\";\n    }\n    else if (fields.at(0) == \"get\" && fields.size() == 3){\n        string name = fields.at(1);\n        int index = atoi(fields.at(2).c_str());\n        index--;\n        sem_wait(mailbox_sem);\n        map<string, DATA>::iterator it = map_.find(name);\n\n        if (it != map_.end()){\n            logger_.log(\"getting data\");\n            if (index >= map_[name].subjects.size()){\n                return \"error index too large\\n\";\n            }\n\n            string subject = map_[name].subjects.at(index);\n            string message = map_[name].messages.at(index);\n            int length = map_[name].sizes.at(index);\n\n            string response = \"message \" + subject + \" \" + to_string(length) + \"\\n\" + message;\n            sem_post(mailbox_sem);\n            return response;\n        }\n        else {\n            sem_post(mailbox_sem);\n            return \"error invalid message\\n\";\n        }\n    }\n    else {\n        return \"error invalid message\\n\";\n    }\n}\n\nvoid\nServer::handle(int client) {\n    // loop to handle all requests\n\n    string cache_ = \"\";\n    while (1) {\n        // get a request\n        string request = get_request(client, cache_);\n        // break if client is done or an error occurred\n        if (request.empty())\n            break;\n\n\n        string response = parse_request(request, client, cache_);\n\n        // send responsed\n        bool success = send_response(client,response);\n        // break if an error occurred\n        if (not success)\n            break;\n    }\n    close(client);\n}\n\nstring\nServer::get_request(int client, string &cache_) {\n    // read until we get a newline\n    int buflen_ = 1024;\n    char *buf_ = new char[buflen_+1];\n    logger_.log(\"current cache: \" + cache_);\n    while (cache_.find(\"\\n\") == string::npos) {//check size\n        int nread = recv(client,buf_,1024,0);\n        if (nread < 0) {\n            if (errno == EINTR)\n                // the socket call was interrupted -- try again\n                continue;\n            else\n                // an error occurred, so break out\n                return \"\";\n        } else if (nread == 0) {\n            // the socket is closed\n            return \"\";\n        }\n        // be sure to use append in case we have binary data\n        cache_.append(buf_,nread);\n    }\n    // a better server would cut off anything after the newline and\n    // save it in a cache\n    //change request to cache\n\n    int nlpos = cache_.find(\"\\n\");\n\n    string request = cache_.substr(0, nlpos + 1);\n    logger_.log(\"---REQUESTTT: \" + request);\n    //trim cache_\n    cache_.erase(0, nlpos + 1);\n    delete buf_;\n    return request;\n    //return substring of cache\n}\n\nstring\nServer::get_request_message(int client, int length, string &cache_) {\n    // read until we get a newline\n    logger_.log(\"current cache: \" + cache_);\n    logger_.log(\"getting message by length: \" + cache_);\n    logger_.log(\"desired length: \" + to_string(length) + \", cache length: \" + to_string(cache_.size()));\n    int buflen_ = 1024;\n    char *buf_ = new char[buflen_+1];\n\n    while (cache_.size() < length) {//check size\n        logger_.log(\"in while loop\");\n        int nread = recv(client,buf_,1024,0);\n        logger_.log(\"in while loop1\");\n        if (nread < 0) {\n            if (errno == EINTR)\n                // the socket call was interrupted -- try again\n                continue;\n            else\n                // an error occurred, so break out\n                return \"\";\n        } else if (nread == 0) {\n            // the socket is closed\n            return \"\";\n        }\n        // be sure to use append in case we have binary data\n        cache_.append(buf_,nread);\n    }\n    // a better server would cut off anything after the newline and\n    // save it in a cache\n    //change request to cache\n\n    //int nlpos = cache_.find(\"\\n\");\n\n    string request = cache_.substr(0, length + 1);\n    logger_.log(\"---REQUESTTT: \" + request);\n    //trim cache_\n    cache_.erase(0, length + 1);\n    delete buf_;\n    return request;\n    //return substring of cache\n}\n\nbool\nServer::send_response(int client, string response) {\n    logger_.log(\"sending response: \");\n    logger_.log(response);\n    // prepare to send response\n    const char* ptr = response.c_str();\n    int nleft = response.length();\n    int nwritten;\n    // loop to be sure it is all sent\n    while (nleft) {\n        if ((nwritten = send(client, ptr, nleft, 0)) < 0) {\n            if (errno == EINTR) {\n                // the socket call was interrupted -- try again\n                continue;\n            } else {\n                // an error occurred, so break out\n                perror(\"write\");\n                return false;\n            }\n        } else if (nwritten == 0) {\n            // the socket is closed\n            return false;\n        }\n        nleft -= nwritten;\n        ptr += nwritten;\n    }\n    return true;\n}\n\n\n",
+			"file": "/Users/jeffreyyoung/Source/cs360-lab2/server.cc",
+			"file_size": 9854,
+			"file_write_time": 130563152600000000,
+			"settings":
+			{
+				"buffer_size": 9850,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/jeffreyyoung/Source/cs360-lab2/inet-server.cc",
+			"settings":
+			{
+				"buffer_size": 1209,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include <queue>\n#include <semaphore>\n\nclass ThreadSafeQueue {\npublic:\n	ThreadSafeQueue(){\n		queue_sem  = sem_open(\"queue\", O_CREAT, 0644, 1);\n		n = sem_open(\"n\", O_CREAT, 0644, 0);\n		e = sem_open(\"e\", O_CREAT, 0644, num_threads);\n	};\n\n	~ThreadSafeQueue(){\n		sem_close(queue_sem);\n		sem_close(n);\n		sem_close(e);\n\n		sem_unlink(\"queue\");\n		sem_unlink(\"n\");\n		sem_unlink(\"e\");\n\n		delete queue_sem;\n		delete n;\n		delete e;\n	};\n\n	void push(int client){\n        sem_wait(e);\n        sem_wait(queue_sem);\n        clients_queue.push(client);\n        sem_post(queue_sem);\n        sem_post(n);\n	};\n\n	int pop(){\n        sem_wait(n);\n        sem_wait(queue_sem);\n        int client = clients_queue.front();\n        clients_queue.pop();\n        sem_post(queue_sem);\n        sem_post(e);\n\n        return client;\n	};\n\nprivate:\n	queue<int> clients_queue;\n    sem_t *queue_sem;\n    sem_t *n;\n    sem_t *e;\n}",
+			"file": "/Users/jeffreyyoung/Source/cs360-lab2/thread-safe-queue.h",
+			"file_size": 942,
+			"file_write_time": 130562377950000000,
+			"settings":
+			{
+				"buffer_size": 891,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/jeffreyyoung/Source/cs360-lab2/server.h",
+			"settings":
+			{
+				"buffer_size": 1356,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/jeffreyyoung/Source/cs360-lab2"
+	],
+	"file_history":
+	[
+		"/Users/jeffreyyoung/Source/cs360-lab2/thread-safe-queue.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab2/server.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/notes.txt",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/echo-client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server/echo-server.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/echo-client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/makefile",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server/server.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server/server.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/server/server",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/inet-client.h",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/inet-client.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/logger.cc",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/logger.h",
+		"/Users/jeffreyyoung/Source/multi-chat/views/index.html",
+		"/Users/jeffreyyoung/Source/cs360-lab1/scratch.cpp",
+		"/Users/jeffreyyoung/Source/messaging-service-python-master/messageClient.py",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client/lab",
+		"/Users/jeffreyyoung/Source/messaging-service-python-master/messageDaemon.py",
+		"/Users/jeffreyyoung/Source/cs360-lab1/client-main.cpp",
+		"/Users/jeffreyyoung/Source/cs360-lab1/Client.cpp",
+		"/Users/jeffreyyoung/Source/cs360-lab1/Client.h",
+		"/Users/jeffreyyoung/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/jeffreyyoung/Source/socket-programming-examples-c/echo/client.cc",
+		"/Users/jeffreyyoung/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/jeffreyyoung/Source/multi-chat/README.md",
+		"/Users/jeffreyyoung/Source/multi-chat/index.js",
+		"/Users/jeffreyyoung/Source/multi-chat/.gitignore",
+		"/Users/jeffreyyoung/Source/multi-chat/package.json",
+		"/Users/jeffreyyoung/Source/multi-chat/Procfile",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/models/Room.js",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/models/Person.js",
+		"/Users/jeffreyyoung/Source/multi-chat/public/js/main.js",
+		"/Users/jeffreyyoung/Source/multi-chat/public/js/transitions.js",
+		"/Users/jeffreyyoung/Source/multi-chat/views/lobby.html",
+		"/Users/jeffreyyoung/Source/multi-chat/socket/main.js",
+		"/Users/jeffreyyoung/Source/multi-chat/views/room.html",
+		"/Users/jeffreyyoung/Desktop/cs252/jh.html",
+		"/Users/jeffreyyoung/Desktop/cs252/wr.html",
+		"/Users/jeffreyyoung/Desktop/cs252/wg.html",
+		"/Users/jeffreyyoung/Desktop/cs252/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/lobby.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/views/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/index.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/public/scripts/login.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/models/Person.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/models/Room.js",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/public/scripts/transitions.js",
+		"/Users/jeffreyyoung/Source/multi-chat/index.html",
+		"/Users/jeffreyyoung/Source/multi-player-go-fish/multi-player-go-fish/package.json"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"map_",
+			"handle",
+			"get_data",
+			"buf_",
+			"split_by_line",
+			"line",
+			"map_ =",
+			"map_=",
+			"messageMap",
+			"map_",
+			"str",
+			"map",
+			"handle_request",
+			"console"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/jeffreyyoung/Source/cs360-lab2/server.cc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9850,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								579,
+								579
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 371.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/jeffreyyoung/Source/cs360-lab2/inet-server.cc",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1209,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 38.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/jeffreyyoung/Source/cs360-lab2/thread-safe-queue.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 891,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								313,
+								313
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 90.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/jeffreyyoung/Source/cs360-lab2/server.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1356,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1191,
+								1191
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 465.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "lab1.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 172.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
